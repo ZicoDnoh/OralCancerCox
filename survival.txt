@@ -1,0 +1,34 @@
+
+    model
+    {
+      # priors
+      beta1 ~ dnorm(2, 0.01)
+      beta2 ~ dnorm(1.6, 0.01)
+      k ~ dnorm(2, 0.01) I(1,3)
+      rho ~ dnorm(3, 0.01) I(1,5)
+      lambda ~ dunif(0, 0.013)
+      for (i in 1:n)
+      { 
+        z[i] ~ dgamma(k, k)
+      }
+      
+      # likelihood
+      for(j in 1:N)
+      {
+        t[j] ~ dweib(rho, pow(lambda, rho))
+        
+        h0[j] <- pow(lambda, rho) * rho * pow(t[j], rho - 1)
+        h0_p[j] <- pow(lambda, rho) * rho * pow(t_p[j], rho - 1)
+        h[j] <- z[f_idx[j]] * h0[j] * exp(beta1*x1[j] + beta2*x2[j])
+        h_p[j] <- z[f_idx[j]] * h0_p[j] * exp(beta1*x1[j] + beta2*x2[j])
+        H0[j] <- pow(lambda, rho) * pow(t[j], rho)
+        H0_p[j] <- pow(lambda, rho) * pow(t_p[j], rho)
+        s[j] <- exp(-z[f_idx[j]] * H0[j] * exp(beta1*x1[j] + beta2*x2[j]))
+        s_p[j] <- exp(-z[f_idx[j]] * H0_p[j] * exp(beta1*x1[j] + beta2*x2[j]))
+        likeli[j] <- pow(h[j], delta[j]) * s[j]
+
+        ascer_likeli[j] <- proband[j] * (1 - s_p[j])
+        log_likeli[j] <- log(likeli[j]) - log(ascer_likeli[j])
+      }
+    }
+    
