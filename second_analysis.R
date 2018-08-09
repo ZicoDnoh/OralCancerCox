@@ -1,13 +1,15 @@
 library(readxl)
+library(icenReg)
 
-Data <- read_xlsx("Masters Research Data MERGED 2018.xlsx", sheet = "All Experiments",
-                  col_names = TRUE)
-colnames(Data) <- Data[1,]
-Data <- Data[-1,]
-Data$AvgCellSize[Data$AvgCellSize == "Bad section"] <- NA
-Data$AvgCellSize <- as.integer(Data$AvgCellSize)
-Data$Date[Data$Date == 41604] <- "26-Nov-2013"
-Data$Date <- as.Date(Data$Date, format = "%d-%b-%Y")
+#Data <- read_xlsx("Masters Research Data MERGED _new2 2018.xlsx", sheet = "All Experiments",
+#                  col_names = TRUE)
+Data <- read.csv("Data_with_events.csv")
+#colnames(Data) <- Data[1,]
+#Data <- Data[-1,]
+#Data$AvgCellSize[Data$AvgCellSize == "Bad section"] <- NA
+#Data$AvgCellSize <- as.integer(Data$AvgCellSize)
+#Data$Date[Data$Date == 41604] <- "26-Nov-2013"
+#Data$Date <- as.Date(Data$Date, format = "%d-%b-%Y")
 
 Data$Dx_new <- create_Dx(Data)
 
@@ -23,11 +25,11 @@ for (i in seq_len(nrow(Data_new))) {
 }
 
 
-fit_ph <- ic_sp(cbind(l, u) ~ Gender + Tobacco, model = 'ph', bs_samples = 100, 
+fit_ph <- ic_sp(cbind(l, u) ~ Gender, model = 'ph', bs_samples = 100, 
                 data = Data_new)
 
-newdata <- data.frame(Gender = c('M', 'F'))
-rownames(newdata) <- c('M', 'F')
+newdata <- data.frame(Gender = c('1', '2'))
+rownames(newdata) <- c('1', '2')
 plot(fit_ph, newdata)
 
 alcohol_na <- c(2,7,10,11,15,16,17,20,22,23)

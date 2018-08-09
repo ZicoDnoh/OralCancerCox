@@ -40,7 +40,9 @@ create_surv <- function(df) {
     
     cur.df <- subset(df, ID == id[i])
     time.pt <- elapsed_months(cur.df$Date, cur.df$Date[1])
-    time.pt <- time.pt + as.numeric(cur.df$Age[1])
+    initial.pt <- elapsed_months(cur.df$Date[1], cur.df$DOB[1])
+    time.pt <- time.pt + initial.pt
+    #time.pt <- time.pt + as.numeric(cur.df$Age[1])
     
     cur.l <- 0
     pre.dx <- "mild"
